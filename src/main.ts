@@ -34,3 +34,63 @@ type Actress = Person & {
   awards: string,
   nationality: ActressNationality
 }
+
+// 📌 Milestone 3
+// Crea una funzione getActress che, dato un id, effettua una chiamata a:
+
+// GET /actresses/:id
+// La funzione deve restituire l’oggetto Actress, se esiste, oppure null se non trovato.
+
+// Utilizza un type guard chiamato isActress per assicurarti che la struttura del dato ricevuto sia corretta.
+
+function isActress(object: unknown): object is Actress {
+  if (
+    typeof object === 'object' &&
+    object !== null &&
+    'id' in object &&
+    typeof object.id === 'number' &&
+    'name' in object &&
+    typeof object.name === 'string' &&
+    'birth_year' in object &&
+    typeof object.birth_year === 'number' &&
+    'biography' in object &&
+    typeof object.biography === 'string' &&
+    'image' in object &&
+    typeof object.image === 'string' &&
+    (!('death_year' in object) || typeof object.death_year === 'number')
+  ) {
+    return true
+  } else {
+    return false
+  }
+}
+
+async function getActress(id: number): Promise<Actress | null> {
+
+  try {
+
+    const res = await fetch(`http://localhost:3333/actresses/${id}`)
+    if (!res.ok) {
+      throw new Error("Errore HTTP, Errore Status")
+    }
+
+    const obj: unknown = await res.json()
+    if (!isActress(obj)) {
+      throw new Error("Errore nel formato dei dati")
+    }
+    return obj
+
+  } catch (error) {
+
+    if (error instanceof Error) {
+      console.error("Errore durante il recupero dell'attrice: ")
+    } else {
+      console.error(error)
+    }
+
+    return null
+  }
+
+}
+
+// console.log(getActress(1));
