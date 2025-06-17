@@ -83,7 +83,7 @@ async function getActress(id: number): Promise<Actress | null> {
   } catch (error) {
 
     if (error instanceof Error) {
-      console.error("Errore durante il recupero dell'attrice: ")
+      console.error("Errore durante il recupero dell'attrice: ", error)
     } else {
       console.error(error)
     }
@@ -94,3 +94,45 @@ async function getActress(id: number): Promise<Actress | null> {
 }
 
 // console.log(getActress(1));
+
+
+// 📌 Milestone 4
+// Crea una funzione getAllActresses che chiama:
+
+// GET /actresses
+// La funzione deve restituire un array di oggetti Actress.
+
+// Può essere anche un array vuoto.
+
+async function getAllActresses(): Promise<Actress[]> {
+
+  try {
+
+    const res = await fetch(`http://localhost:3333/actresses`)
+    if (!res.ok) {
+      throw new Error("Errore HTTP, Errore Status")
+    }
+
+    const obj: unknown = await res.json()
+
+    if (!(obj instanceof Array)) {
+      throw new Error("formato non valido")
+    }
+
+    const validArray = obj.filter(attrice => isActress(attrice))
+
+    return validArray
+
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Errore durante il recupero delle attrici ", error)
+    } else {
+      console.error(error)
+    }
+
+    return []
+  }
+
+}
+
+console.log(getAllActresses());
